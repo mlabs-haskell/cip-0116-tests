@@ -31,6 +31,39 @@ ajv.addFormat('base58', str => {
   }
 });
 
+ajv.addFormat('uint64', str => {
+  try {
+    return BigInt(str) < BigInt(2) ** BigInt(64) && BigInt(str) >= BigInt(0);
+  } catch (_) {
+    return false;
+  }
+});
+
+ajv.addFormat('int128', str => {
+  try {
+    return BigInt(str) < BigInt(2) ** BigInt(128) &&
+      BigInt(str) > - (BigInt(2) ** BigInt(128));
+  } catch (_) {
+    return false;
+  }
+});
+
+ajv.addFormat('string64', str => {
+  try {
+    return ((new TextEncoder()).encode(str)).length <= 64;
+  } catch (_) {
+    return false;
+  }
+});
+
+ajv.addFormat('posint64', str => {
+  try {
+    return BigInt(str) < BigInt(2) ** BigInt(64) && BigInt(str) > BigInt(0);
+  } catch (_) {
+    return false;
+  }
+});
+
 ajv.addFormat('hex', str => {
   return /^([0-9a-f][0-9a-f])*$/.test(str);
 });
@@ -40,6 +73,17 @@ export const schema = JSON.parse(
 
 ajv.addSchema(schema, 'cardano-babbage.json');
 ajv.addMetaSchema(metaSchema, 'meta');
+
+ajv.addKeyword({
+  keyword: "discriminator",
+  type: "object",
+  schemaType: "object",
+  code(cxt) {
+    const {data, schema} = cxt;
+    cxt.fail(Ajv2020._`typeof ${schema.propertyName} !== 'string'`);
+    cxt.fail(Ajv2020._`!${data}.hasOwnProperty(${schema.propertyName})`);
+  },
+});
 
 export const mkValidatorForType = (type) => {
   return ajv.getSchema('cardano-babbage.json#/definitions/' + type);
@@ -86,6 +130,8 @@ export const checkRefs = (json) => {
     'enum',
     'patternProperties',
     'items',
+    'maxItems',
+    'minItems',
     'examples'
   ]);
 
