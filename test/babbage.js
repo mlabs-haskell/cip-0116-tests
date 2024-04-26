@@ -77,6 +77,36 @@ const updateFixture1 = {
   }
 };
 
+const auxiliaryDataFixture1 = {
+  metadata: [
+    {
+      key: '123',
+      value: { tag: 'list', contents: [] }
+    }
+  ],
+  native_scripts: [
+    {
+      tag: 'pubkey',
+      pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
+    },
+    {
+      tag: 'all',
+      scripts: [
+        {
+          tag: 'pubkey',
+          pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
+        }
+      ]
+    },
+  ],
+  plutus_scripts: [
+    {
+      language: 'plutus_v1',
+      bytes: '0101'
+    }
+  ]
+};
+
 const transactionBodyFixture1 = {
   "auxiliary_data_hash": '0000000000000000000000000000000000000000000000000000000000000000',
   "inputs": [
@@ -161,6 +191,61 @@ const transactionBodyFixture1 = {
     }
   ]
 };
+
+const transactionWitnessSetFixture1 = {
+  bootstraps: [
+    {
+      attributes: '',
+      chain_code: '0000000000000000000000000000000000000000000000000000000000000000',
+      signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+      vkey: '0000000000000000000000000000000000000000000000000000000000000000'
+    },
+  ],
+  native_scripts: [
+    {
+      tag: 'all',
+      scripts: [
+        {
+          tag: 'pubkey',
+          pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
+        }
+      ]
+    }
+  ],
+  plutus_data: [
+    {
+      tag: 'list',
+      contents: []
+    }
+  ],
+  plutus_scripts: [
+    {
+      bytes: '0000000000000000000000000000000000000000000000000000000000000000',
+      language: 'plutus_v1'
+    }
+  ],
+  redeemers: [
+    {
+      data: {
+        tag: 'bytes',
+        value: '00'
+      },
+      tag: 'mint',
+      index: '0',
+      ex_units: {
+        mem: '10',
+        steps: '10',
+      }
+    }
+  ],
+  vkeywitnesses: [
+    {
+      vkey: '0000000000000000000000000000000000000000000000000000000000000000',
+      signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+    }
+  ]
+};
+
 
 describe('Babbage schema', function () {
   it('Schema is valid according to meta-schema', function () {
@@ -775,35 +860,7 @@ describe('Babbage schema', function () {
 
   describe('AuxiliaryData', function () {
     const fixtures = [
-      {
-        metadata: [
-          {
-            key: '123',
-            value: { tag: 'list', contents: [] }
-          }
-        ],
-        native_scripts: [
-          {
-            tag: 'pubkey',
-            pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
-          },
-          {
-            tag: 'all',
-            scripts: [
-              {
-                tag: 'pubkey',
-                pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
-              }
-            ]
-          },
-        ],
-        plutus_scripts: [
-          {
-            language: 'plutus_v1',
-            bytes: '0101'
-          }
-        ]
-      }
+      auxiliaryDataFixture1
     ];
 
     const negFixtures = [
@@ -1148,59 +1205,7 @@ describe('Babbage schema', function () {
 
   describe('TransactionWitnessSet', function () {
     const fixtures = [
-      {
-        bootstraps: [
-          {
-            attributes: '',
-            chain_code: '0000000000000000000000000000000000000000000000000000000000000000',
-            signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-            vkey: '0000000000000000000000000000000000000000000000000000000000000000'
-          },
-        ],
-        native_scripts: [
-          {
-            tag: 'all',
-            scripts: [
-              {
-                tag: 'pubkey',
-                pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
-              }
-            ]
-          }
-        ],
-        plutus_data: [
-          {
-            tag: 'list',
-            contents: []
-          }
-        ],
-        plutus_scripts: [
-          {
-            bytes: '0000000000000000000000000000000000000000000000000000000000000000',
-            language: 'plutus_v1'
-          }
-        ],
-        redeemers: [
-          {
-            data: {
-              tag: 'bytes',
-              value: '00'
-            },
-            tag: 'mint',
-            index: '0',
-            ex_units: {
-              mem: '10',
-              steps: '10',
-            }
-          }
-        ],
-        vkeywitnesses: [
-          {
-            vkey: '0000000000000000000000000000000000000000000000000000000000000000',
-            signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-          }
-        ]
-      }
+      transactionWitnessSetFixture1
     ];
 
     const negFixtures = [
@@ -1234,6 +1239,22 @@ describe('Babbage schema', function () {
     ];
 
     assertions('TransactionMetadata', fixtures, negFixtures);
+  });
+
+  describe('Transaction', function () {
+    const fixtures = [
+      {
+        auxiliary_data: auxiliaryDataFixture1,
+        body: transactionBodyFixture1,
+        is_valid: false,
+        witness_set: transactionWitnessSetFixture1
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('Transaction', fixtures, negFixtures);
   });
 
   describe('Value', function () {
