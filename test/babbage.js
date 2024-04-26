@@ -1030,6 +1030,185 @@ describe('Babbage schema', function () {
     assertions('TransactionBody', fixtures, negFixtures);
   });
 
+  describe('Ed25519PublicKey', function () {
+    const fixtures = [
+      '0000000000000000000000000000000000000000000000000000000000000000'
+    ];
+
+    const negFixtures = [
+      '000000000000000000000000000000000000000000000000000000000000000'
+    ];
+
+    assertions('Ed25519PublicKey', fixtures, negFixtures);
+  });
+
+  describe('Ed25519Signature', function () {
+    const fixtures = [
+      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+    ];
+
+    const negFixtures = [
+      '000000000000000000000000000000000000000000000000000000000000000'
+    ];
+
+    assertions('Ed25519Signature', fixtures, negFixtures);
+  });
+
+  describe('BootstrapWitness', function () {
+    const fixtures = [
+      {
+        attributes: '',
+        chain_code: '0000000000000000000000000000000000000000000000000000000000000000',
+        signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        vkey: '0000000000000000000000000000000000000000000000000000000000000000'
+      },
+      {
+        attributes: '0101',
+        chain_code: '0000000000000000000000000000000000000000000000000000000000000000',
+        signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+        vkey: '0000000000000000000000000000000000000000000000000000000000000000'
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('BootstrapWitness', fixtures, negFixtures);
+  });
+
+  describe('PlutusData', function () {
+    const fixtures = [
+      {
+        tag: 'list',
+        contents: [
+          {
+            tag: 'list',
+            contents: []
+          }
+        ]
+      },
+      {
+        tag: 'constr',
+        alternative: '0',
+        data: []
+      },
+      {
+        tag: 'map',
+        contents: [
+          {
+            key: {
+              tag: 'list',
+              contents: []
+            },
+            value: {
+              tag: 'list',
+              contents: []
+            }
+          }
+        ]
+      },
+      {
+        tag: 'integer',
+        value: '12345'
+      },
+      {
+        tag: 'bytes',
+        value: '00'
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('PlutusData', fixtures, negFixtures);
+  });
+
+  describe('Redeemer', function () {
+    const fixtures = [
+      {
+        data: {
+          tag: 'bytes',
+          value: '00'
+        },
+        tag: 'mint',
+        index: '0',
+        ex_units: {
+          mem: '10',
+          steps: '10',
+        }
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('Redeemer', fixtures, negFixtures);
+  });
+
+
+  describe('TransactionWitnessSet', function () {
+    const fixtures = [
+      {
+        bootstraps: [
+          {
+            attributes: '',
+            chain_code: '0000000000000000000000000000000000000000000000000000000000000000',
+            signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+            vkey: '0000000000000000000000000000000000000000000000000000000000000000'
+          },
+        ],
+        native_scripts: [
+          {
+            tag: 'all',
+            scripts: [
+              {
+                tag: 'pubkey',
+                pubkey: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
+              }
+            ]
+          }
+        ],
+        plutus_data: [
+          {
+            tag: 'list',
+            contents: []
+          }
+        ],
+        plutus_scripts: [
+          {
+            bytes: '0000000000000000000000000000000000000000000000000000000000000000',
+            language: 'plutus_v1'
+          }
+        ],
+        redeemers: [
+          {
+            data: {
+              tag: 'bytes',
+              value: '00'
+            },
+            tag: 'mint',
+            index: '0',
+            ex_units: {
+              mem: '10',
+              steps: '10',
+            }
+          }
+        ],
+        vkeywitnesses: [
+          {
+            vkey: '0000000000000000000000000000000000000000000000000000000000000000',
+            signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          }
+        ]
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('TransactionWitnessSet', fixtures, negFixtures);
+  });
+
   describe('ScriptDataHash', function () {
     const fixtures = [
       '0000000000000000000000000000000000000000000000000000000000000000'
