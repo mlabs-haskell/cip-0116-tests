@@ -17,7 +17,7 @@ addFormats(ajv);
 
 ajv.addFormat('bech32', str => {
   try {
-    return !!bech32.decode(str);
+    return !!bech32.decode(str, 108 /* length limit */);
   } catch (_) {
     return false;
   }

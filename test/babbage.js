@@ -246,6 +246,38 @@ const transactionWitnessSetFixture1 = {
   ]
 };
 
+const vrfCertFixture1 = {
+  output: '000000',
+  proof: '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+};
+
+const operationalCertFixture1 = {
+  hot_vkey: '0000000000000000000000000000000000000000000000000000000000000000',
+  kes_period: 123,
+  sequence_number: 123,
+  sigma: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+};
+
+const headerBodyFixture1 = {
+  "block_number": 123,
+  "slot": '123',
+  "prev_hash": '0000000000000000000000000000000000000000000000000000000000000000',
+  "issuer_vkey": '0000000000000000000000000000000000000000000000000000000000000000',
+  "vrf_vkey": '0000000000000000000000000000000000000000000000000000000000000000',
+  "vrf_result": vrfCertFixture1,
+  "block_body_size": 12300,
+  "block_body_hash": '0000000000000000000000000000000000000000000000000000000000000000',
+  "operational_cert": operationalCertFixture1,
+  "protocol_version": {
+    minor: 1,
+    major: 1
+  }
+};
+
+const headerFixture1 = {
+  body_signature: new Array(896).fill(0).join(''),
+  header_body: headerBodyFixture1
+};
 
 describe('Babbage schema', function () {
   it('Schema is valid according to meta-schema', function () {
@@ -256,6 +288,37 @@ describe('Babbage schema', function () {
 
   it('`$ref`s are pointing to existing definitions', function () {
     checkRefs(schema);
+  });
+
+  describe('UInt32', function () {
+    const fixtures = [
+      0,
+      123,
+      2 ** 32 - 1,
+    ];
+
+    const negFixtures = [
+      2 ** 32,
+      -1
+    ];
+    assertions('UInt32', fixtures, negFixtures);
+  });
+
+  describe('NonZeroInt64', function () {
+    const fixtures = [
+      '9',
+      '-1234',
+      '-123412341234123412341234123412341234123412341234123412341234',
+      '123412341234123412341234123412341234123412341234123412341234',
+    ];
+
+    const negFixtures = [
+      '09',
+      '-0',
+      '-09',
+      '0'
+    ];
+    assertions('NonZeroInt64', fixtures, negFixtures);
   });
 
   describe('BigInt', function () {
@@ -1281,6 +1344,66 @@ describe('Babbage schema', function () {
     assertions('Value', fixtures, negFixtures);
   });
 
+  describe('PointerAddress', function () {
+    const fixtures = [
+      'addr_test12qwkg3waakjhsytl8yuy3e59z283u79dp38ysy5ut9jdctnm0das5x6dte'
+    ];
+
+    const negFixtures = [
+      'stake_test1uqwqydujlgw0ltzgd8l42v6rjepuxgk6hzkyknx0cde',
+      '37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na'
+    ];
+    assertions('PointerAddress', fixtures, negFixtures);
+  });
+
+  describe('RewardAddress', function () {
+    const fixtures = [
+      'stake1u8z2pmn0czx7pyhenmag4rsprh63as5jafqr7t5s6r550ygukhfyx',
+      'stake_test1uqwqydujlgw0ltzgd8l42v6rjepuxgk6hzkyknx0cdeyg6g4mfhar'
+    ];
+
+    const negFixtures = [
+      'stake_test1uqwqydujlgw0ltzgd8l42v6rjepuxgk6hzkyknx0cde',
+      '37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na'
+    ];
+    assertions('RewardAddress', fixtures, negFixtures);
+  });
+
+  describe('EnterpriseAddress', function () {
+    const fixtures = [
+      'addr_test1wqwkg3waakjhsytl8yuy3e59z283u79dp38ysy5ut9jdcts6n3w7y'
+    ];
+
+    const negFixtures = [
+      'stake_test1uqwqydujlgw0ltzgd8l42v6rjepuxgk6hzkyknx0cde',
+      '37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na'
+    ];
+    assertions('EnterpriseAddress', fixtures, negFixtures);
+  });
+
+  describe('BaseAddress', function () {
+    const fixtures = [
+      'addr_test1qpjlw2zm8srejka8a3fdmv0us68q8djt8ptusanjmwmux82pdekwpwsjwnfeu6dfauv8zrecdcmefyek9hejpdqlwwqqev9cr6'
+    ];
+
+    const negFixtures = [
+      'stake_test1uqwqydujlgw0ltzgd8l42v6rjepuxgk6hzkyknx0cde',
+    ];
+    assertions('BaseAddress', fixtures, negFixtures);
+  });
+
+  describe('ByronAddress', function () {
+    const fixtures = [
+      '37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na'
+    ];
+
+    const negFixtures = [
+      'addr_test1qpjlw2zm8srejka8a3fdmv0us68q8djt8ptusanjmwmux82pdekwpwsjwnfeu6dfauv8zrecdcmefyek9hejpdqlwwqqev9cr6',
+      'stake_test1uqwqydujlgw0ltzgd8l42v6rjepuxgk6hzkyknx0cde',
+    ];
+    assertions('ByronAddress', fixtures, negFixtures);
+  });
+
   describe('Address', function () {
     const fixtures = [
       '37btjrVyb4KDXBNC4haBVPCrro8AQPHwvCMp3RFhhSVWwfFmZ6wwzSK6JK1hY6wHNmtrpTf1kdbva8TCneM2YsiXT7mrzT21EacHnPpz5YyUdj64na',
@@ -1304,4 +1427,340 @@ describe('Babbage schema', function () {
     ];
     assertions('Ipv6', fixtures, negFixtures);
   });
+
+  describe('NetworkId', function () {
+    const fixtures = [
+      'mainnet',
+      'testnet'
+    ];
+
+    const negFixtures = [
+      'foo'
+    ];
+    assertions('NetworkId', fixtures, negFixtures);
+  });
+
+  describe('RedeemerTag', function () {
+    const fixtures = [
+      'mint',
+      'spend',
+      'reward',
+      'cert',
+    ];
+
+    const negFixtures = [
+      'foo'
+    ];
+
+    assertions('RedeemerTag', fixtures, negFixtures);
+  });
+
+  describe('Ipv4', function () {
+    const fixtures = [
+      '127.0.0.1',
+      '127.0.0.100',
+      '127.0.0.255',
+    ];
+
+    const negFixtures = [
+      'foo',
+      '127.0.0.257',
+      '127.0.0.256',
+      '127.0.0.255.123',
+    ];
+
+    assertions('Ipv4', fixtures, negFixtures);
+  });
+
+  describe('DNSName', function () {
+    const fixtures = [
+      'example.com',
+      // invalid in theory, but cddl is ok with that.
+      // we can't enforce more domain restrictions
+      'https://example.com',
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('DNSName', fixtures, negFixtures);
+  });
+
+  describe('URL', function () {
+    const fixtures = [
+      // invalid in theory, but cddl is ok with that.
+      // we can't enforce more domain restrictions
+      'example.com',
+      'https://example.com',
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('URL', fixtures, negFixtures);
+  });
+
+  describe('MIRPot', function () {
+    const fixtures = [
+      'reserves',
+      'treasury',
+    ];
+
+    const negFixtures = [
+      'foo'
+    ];
+
+    assertions('MIRPot', fixtures, negFixtures);
+  });
+
+  describe('Language', function () {
+    const fixtures = [
+      'plutus_v1',
+      'plutus_v2',
+    ];
+
+    const negFixtures = [
+      'foo'
+    ];
+
+    assertions('Language', fixtures, negFixtures);
+  });
+
+  describe('Language', function () {
+    const fixtures = [
+      'plutus_v1',
+      'plutus_v2',
+    ];
+
+    const negFixtures = [
+      'foo'
+    ];
+
+    assertions('Language', fixtures, negFixtures);
+  });
+
+  describe('Vkeywitness', function () {
+    const fixtures = [
+      {
+        vkey: '0000000000000000000000000000000000000000000000000000000000000000',
+        signature: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('Vkeywitness', fixtures, negFixtures);
+  });
+
+  describe('UnitInterval', function () {
+    const fixtures = [
+      {
+        numerator: '123',
+        denominator: '345'
+      }
+    ];
+
+    const negFixtures = [
+      {
+        numerator: '-123',
+        denominator: '345'
+      }
+    ];
+
+    assertions('UnitInterval', fixtures, negFixtures);
+  });
+
+  describe('VRFCert', function () {
+    const fixtures = [
+      vrfCertFixture1
+    ];
+
+    const negFixtures = [
+      {
+        output: '000000',
+        proof: '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+      }
+    ];
+
+    assertions('VRFCert', fixtures, negFixtures);
+  });
+
+  describe('OperationalCert', function () {
+    const fixtures = [
+      operationalCertFixture1
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('OperationalCert', fixtures, negFixtures);
+  });
+
+  describe('HeaderBody', function () {
+    const fixtures = [
+      headerBodyFixture1
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('HeaderBody', fixtures, negFixtures);
+  });
+
+  describe('Header', function () {
+    const fixtures = [
+      headerFixture1
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('Header', fixtures, negFixtures);
+  });
+
+  describe('Block', function () {
+    const fixtures = [
+      {
+        auxiliary_data_set: {
+          0: auxiliaryDataFixture1,
+          1: auxiliaryDataFixture1
+        },
+        header: headerFixture1,
+        invalid_transactions: [ 1, 2, 3 ],
+        transaction_bodies: [ transactionBodyFixture1, transactionBodyFixture1 ],
+        transaction_witness_sets: [ transactionWitnessSetFixture1 ]
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('Block', fixtures, negFixtures);
+  });
+
+  describe('KESSignature', function () {
+    const fixtures = [
+      new Array(896).fill(0).join('')
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('KESSignature', fixtures, negFixtures);
+  });
+
+  describe('GenesisHash', function () {
+    const fixtures = [
+      new Array(56).fill('0').join('')
+    ];
+
+    const negFixtures = [
+      new Array(64).fill('0').join('')
+    ];
+
+    assertions('GenesisHash', fixtures, negFixtures);
+  });
+
+  describe('BlockHash', function () {
+    const fixtures = [
+      new Array(64).fill('0').join('')
+    ];
+
+    const negFixtures = [
+      new Array(56).fill('0').join('')
+    ];
+
+    assertions('BlockHash', fixtures, negFixtures);
+  });
+
+  describe('KESVKey', function () {
+    const fixtures = [
+      new Array(64).fill('0').join('')
+    ];
+
+    const negFixtures = [
+      new Array(56).fill('0').join('')
+    ];
+
+    assertions('KESVKey', fixtures, negFixtures);
+  });
+
+  describe('VRFVKey', function () {
+    const fixtures = [
+      new Array(64).fill('0').join('')
+    ];
+
+    const negFixtures = [
+      new Array(56).fill('0').join('')
+    ];
+
+    assertions('VRFVKey', fixtures, negFixtures);
+  });
+
+  describe('PoolMetadata', function () {
+    const fixtures = [
+      {
+        url: "https://example.com/foo.json",
+        hash: '0000000000000000000000000000000000000000000000000000000000000000'
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('PoolMetadata', fixtures, negFixtures);
+  });
+
+  describe('GenesisDelegateHash', function () {
+    const fixtures = [
+      '00000000000000000000000000000000000000000000000000000000'
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('GenesisDelegateHash', fixtures, negFixtures);
+  });
+
+  describe('PoolMetadataHash', function () {
+    const fixtures = [
+      '0000000000000000000000000000000000000000000000000000000000000000'
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('PoolMetadataHash', fixtures, negFixtures);
+  });
+
+  describe('MoveInstantaneousRewards', function () {
+    const fixtures = [
+      {
+        tag: 'to_stake_creds',
+        pot: 'treasury',
+        rewards: [
+          {
+            key: {
+              tag: 'pubkey_hash',
+              value: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
+            },
+            value: '12345'
+          }
+        ]
+      },
+      {
+        tag: 'to_other_pot',
+        pot: 'treasury',
+        amount: '12345'
+      }
+    ];
+
+    const negFixtures = [
+    ];
+
+    assertions('MoveInstantaneousRewards', fixtures, negFixtures);
+  });
+
+
 });
