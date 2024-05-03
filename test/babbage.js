@@ -1080,7 +1080,7 @@ describe('Babbage schema', function () {
       {
         tag: 'stake_delegation',
         credential: { tag: 'pubkey_hash', value: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361' },
-        pool_keyhash: '1c12f03c1ef2e935acc35ec2e6f96c650fd3bfba3e96550504d53361'
+        pool_keyhash: 'pool1u6kpt8hgqcm596kukj97ghefmxn8ks2cgwg8qqe0gtgscnufk5p'
       },
       {
         tag: 'pool_registration',
