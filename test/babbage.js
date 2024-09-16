@@ -1765,6 +1765,4 @@ describe('Babbage schema', function () {
 
     assertions('MoveInstantaneousRewards', fixtures, negFixtures);
   });
-
-
 });

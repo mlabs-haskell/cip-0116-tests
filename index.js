@@ -36,6 +36,14 @@ ajv.addFormat('base58', str => {
   }
 });
 
+ajv.addFormat('uint16', str => {
+  try {
+    return BigInt(str) < BigInt(2) ** BigInt(16) && BigInt(str) >= BigInt(0);
+  } catch (_) {
+    return false;
+  }
+});
+
 ajv.addFormat('uint64', str => {
   try {
     return BigInt(str) < BigInt(2) ** BigInt(64) && BigInt(str) >= BigInt(0);
@@ -56,6 +64,14 @@ ajv.addFormat('int128', str => {
 ajv.addFormat('string64', str => {
   try {
     return ((new TextEncoder()).encode(str)).length <= 64;
+  } catch (_) {
+    return false;
+  }
+});
+
+ajv.addFormat('string128', str => {
+  try {
+    return ((new TextEncoder()).encode(str)).length <= 128;
   } catch (_) {
     return false;
   }
@@ -153,14 +169,20 @@ export const checkRefs = (json) => {
           ).join(', ')
       );
     }
+    if (typeof json.definitions[key].title != 'string') {
+      throw ('No title set for ' + key);
+    }
     if (json.definitions[key].title != key) {
-      throw ('No title set for', key);
+      throw (
+        'Wrong title set for ' + key + ': ' +
+          json.definitions[key].title + ', must be ' + key
+      );
     }
   });
 
   for (const ref of refs.keys()) {
     if (typeof json.definitions[ref] != 'object') {
-      throw ('$ref not found: ', ref);
+      throw ('$ref not found: ' + ref);
     }
   }
 };
