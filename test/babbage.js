@@ -1,5 +1,9 @@
 import * as assert from 'assert';
-import { checkRefs, schema, mkValidatorForType, ajv } from '../index.js';
+import { checkRefs, schemas, mkValidatorForType as mkValidatorForType_, ajv } from '../index.js';
+
+const schema = schemas.babbage;
+
+const mkValidatorForType = (type) => mkValidatorForType_('babbage', type);
 
 function assertions (type, fixtures, negFixtures) {
   const validate = mkValidatorForType(type);
@@ -282,8 +286,8 @@ const headerFixture1 = {
 describe('Babbage schema', function () {
   it('Schema is valid according to meta-schema', function () {
     const valid = ajv.validateSchema(schema);
-    assert.equal(valid, true);
     assert.equal(ajv.errors, null);
+    assert.equal(valid, true);
   });
 
   it('`$ref`s are pointing to existing definitions', function () {

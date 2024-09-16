@@ -5,6 +5,11 @@ import * as metaSchema from 'ajv/lib/refs/json-schema-2020-12/schema.json' asser
 import { bech32 } from 'bech32';
 import { base58_to_binary } from "base58-js";
 
+export const eras = {
+  'babbage': './CIPs/CIP-0116/cardano-babbage.json',
+  'conway': './CIPs/CIP-0116/cardano-conway.json',
+};
+
 export const ajv = new Ajv2020({
   strict: true,
   strictSchema: true,
@@ -68,10 +73,13 @@ ajv.addFormat('hex', str => {
   return /^([0-9a-f][0-9a-f])*$/.test(str);
 });
 
-export const schema = JSON.parse(
-  fs.readFileSync('./CIPs/CIP-0116/cardano-babbage.json'));
+export const schemas = {
+  babbage: JSON.parse(fs.readFileSync(eras.babbage)),
+  conway: JSON.parse(fs.readFileSync(eras.conway))
+};
 
-ajv.addSchema(schema, 'cardano-babbage.json');
+ajv.addSchema(schemas.babbage, 'cardano-babbage.json');
+ajv.addSchema(schemas.conway, 'cardano-conway.json');
 ajv.addMetaSchema(metaSchema, 'meta');
 
 ajv.addKeyword({
@@ -85,8 +93,8 @@ ajv.addKeyword({
   },
 });
 
-export const mkValidatorForType = (type) => {
-  return ajv.getSchema('cardano-babbage.json#/definitions/' + type);
+export const mkValidatorForType = (era, type) => {
+  return ajv.getSchema('cardano-' + era + '.json#/definitions/' + type);
 };
 
 export const checkRefs = (json) => {
@@ -135,8 +143,8 @@ export const checkRefs = (json) => {
     'examples'
   ]);
 
-  Object.keys(schema.definitions).sort().forEach(key => {
-    const value = schema.definitions[key];
+  Object.keys(json.definitions).sort().forEach(key => {
+    const value = json.definitions[key];
     if (!Object.keys(value).every(x => allowedProperties.has(x))) {
       throw(
         'Disallowed property found in ' + key + ':' +
@@ -145,13 +153,13 @@ export const checkRefs = (json) => {
           ).join(', ')
       );
     }
-    if (schema.definitions[key].title != key) {
+    if (json.definitions[key].title != key) {
       throw ('No title set for', key);
     }
   });
 
   for (const ref of refs.keys()) {
-    if (typeof schema.definitions[ref] != 'object') {
+    if (typeof json.definitions[ref] != 'object') {
       throw ('$ref not found: ', ref);
     }
   }
