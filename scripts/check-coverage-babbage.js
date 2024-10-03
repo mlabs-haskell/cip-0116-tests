@@ -1,4 +1,4 @@
-import { schema } from '../index.js';
+import { schemas } from '../index.js';
 import { readFileSync } from 'fs';
 
 const checkCoverage = (definitions, file) => {
@@ -12,7 +12,9 @@ const checkCoverage = (definitions, file) => {
   });
   if (flag) {
     throw new Error("Coverage not complete!");
+  } else {
+    console.log('Done')
   }
 };
 
-checkCoverage(schema.definitions, './test/babbage.js');
+checkCoverage(schemas.babbage.definitions, './test/babbage.js');
